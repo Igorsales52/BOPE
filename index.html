@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💀SGB - Sistema de Gestão do BOPE</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: black url('Images/imagesfundo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: red;
+    }
+    header {
+      background-color: #111;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+    }
+    .painel {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      margin: 20px;
+      border-radius: 10px;
+    }
+    .btn {
+      background-color: red;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      margin: 10px 0 0 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: darkred;
+    }
+    .section {
+      display: none;
+      margin: 20px;
+    }
+    input, textarea {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-family: inherit;
+      color: red;
+      background-color: #222;
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SGB - Sistema de Gestão do BOPE</h1>
+  </header>
+  <div class="painel">
+    <h2>Palavras do Comandante</h2>
+    <textarea id="palavrasComandante" rows="4">Manter a honra, a disciplina e o compromisso com a missão são pilares do nosso batalhão. Honra e coragem!</textarea>
+    <input id="assinaturaComandante" placeholder="Assinatura do Comandante" />
+    <button class="btn" onclick="salvarPalavras()">Salvar</button>
+  </div>
+
+  <div class="painel">
+    <button class="btn" onclick="showSection('efetivo')">Efetivo</button>
+    <button class="btn" onclick="showSection('escala')">Escala</button>
+    <button class="btn" onclick="showSection('manutencao')">Manutenção</button>
+    <button class="btn" onclick="showSection('permuta')">Permutas</button>
+  </div>
+
+  <div id="efetivo" class="section">
+    <h2>Cadastro de Efetivo</h2>
+    <input id="nome" placeholder="Nome completo" />
+    <input id="funcao" placeholder="Função" />
+    <input id="posto" placeholder="Posto ou graduação" />
+    <button class="btn" onclick="salvarEfetivo()">Salvar Efetivo</button>
+    <div id="listaEfetivo"></div>
+  </div>
+
+  <div id="escala" class="section">
+    <h2>Escala de Serviço</h2>
+    <input id="dataEscala" type="date" placeholder="Data" />
+    <input id="militarEscala" placeholder="Nome do Militar" />
+    <input id="turnoEscala" placeholder="Turno" />
+    <button class="btn" onclick="salvarEscala()">Salvar Escala</button>
+    <div id="listaEscala"></div>
+  </div>
+
+  <div id="manutencao" class="section">
+    <h2>Controle de Manutenção</h2>
+    <input id="viatura" placeholder="Viatura" />
+    <input id="tipoManutencao" placeholder="Tipo de Manutenção" />
+    <input id="dataManutencao" type="date" placeholder="Data" />
+    <button class="btn" onclick="salvarManutencao()">Salvar Manutenção</button>
+    <div id="listaManutencao"></div>
+  </div>
+
+  <div id="permuta" class="section">
+    <h2>Autorização de Permutas</h2>
+    <input id="militar1" placeholder="Militar 1" />
+    <input id="militar2" placeholder="Militar 2" />
+    <input id="dataPermuta" type="date" placeholder="Data da Permuta" />
+    <input id="autorizadoPor" placeholder="Autorizado por" />
+    <button class="btn" onclick="salvarPermuta()">Salvar Permuta</button>
+    <div id="listaPermutas"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_AUTH_DOMAIN",
+      projectId: "SEU_PROJECT_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+
+    // Palavras do Comandante - salvar e carregar localStorage
+    function salvarPalavras() {
+      const palavras = document.getElementById('palavrasComandante').value;
+      const assinatura = document.getElementById('assinaturaComandante').value;
+      localStorage.setItem('palavrasComandante', palavras);
+      localStorage.setItem('assinaturaComandante', assinatura);
+      alert('Palavras do Comandante salvas localmente.');
+    }
+    function carregarPalavras() {
+      const palavras = localStorage.getItem('palavrasComandante');
+      const assinatura = localStorage.getItem('assinaturaComandante');
+      if (palavras) document.getElementById('palavrasComandante').value = palavras;
+      if (assinatura) document.getElementById('assinaturaComandante').value = assinatura;
+    }
+
+    // Funções para Efetivo
+    async function salvarEfetivo() {
+      const nome = document.getElementById('nome').value;
+      const funcao = document.getElementById('funcao').value;
+      const posto = document.getElementById('posto').value;
+      await db.collection("efetivo").add({ nome, funcao, posto, data: new Date() });
+      listarEfetivo();
+    }
+    async function listarEfetivo() {
+      const container = document.getElementById("listaEfetivo");
+      container.innerHTML = "<h3>Lista de Efetivo:</h3>";
+      const snapshot = await db.collection("efetivo").orderBy("data", "desc").get();
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        container.innerHTML += `<p><strong>${data.nome}</strong> - ${data.funcao} - ${data.posto}</p>`;
+      });
+    }
+
+    // Funções para Escala
+    async function salvarEscala() {
+      const data = document.getElementById('dataEscala').value;
+      const militar = document.getElementById('militarEscala').value;
+      const turno = document.getElementById('turnoEscala').value;
+      await db.collection("escala").add({ data, militar, turno });
+      listarEscala();
+    }
+    async function listarEscala() {
+      const container = document.getElementById("listaEscala");
+      container.innerHTML = "<h3>Escalas:</h3>";
+      const snapshot = await db.collection("escala").orderBy("data", "desc").get();
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        container.innerHTML += `<p><strong>${data.data}</strong> - ${data.militar} - ${data.turno}</p>`;
+      });
+    }
+
+    // Funções para Manutenção
+    async function salvarManutencao() {
+      const viatura = document.getElementById('viatura').value;
+      const tipo = document.getElementById('tipoManutencao').value;
+      const data = document.getElementById('dataManutencao').value;
+      await db.collection("manutencao").add({ viatura, tipo, data });
+      listarManutencao();
+    }
+    async function listarManutencao() {
+      const container = document.getElementById("listaManutencao");
+      container.innerHTML = "<h3>Manutenções:</h3>";
+      const snapshot = await db.collection("manutencao").orderBy("data", "desc").get();
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        container.innerHTML += `<p><strong>${data.viatura}</strong> - ${data.tipo} - ${data.data}</p>`;
+      });
+    }
+
+    // Funções para Permutas
+    async function salvarPermuta() {
+      const militar1 = document.getElementById('militar1').value;
+      const militar2 = document.getElementById('militar2').value;
+      const data = document.getElementById('dataPermuta').value;
+      const autorizadoPor = document.getElementById('autorizadoPor').value;
+      await db.collection("permutas").add({ militar1, militar2, data, autorizadoPor });
+      listarPermutas();
+    }
+    async function listarPermutas() {
+      const container = document.getElementById("listaPermutas");
+      container.innerHTML = "<h3>Permutas:</h3>";
+      const snapshot = await db.collection("permutas").orderBy("data", "desc").get();
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        container.innerHTML += `<p><strong>${data.data}</strong>: ${data.militar1} ↔ ${data.militar2} (Autorizado por: ${data.autorizadoPor})</p>`;
+      });
+    }
+
+    window.onload = function() {
+      listarEfetivo();
+      listarEscala();
+      listarManutencao();
+      listarPermutas();
+      carregarPalavras();
+    }
+  </script>
+</body>
+</html>
