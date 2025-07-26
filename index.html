@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>💀 SGB - Sistema de Gestão do BOPE</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+        h1 .skull {
+            font-size: 32px;
+            color: #ff0000; /* vermelho */
+        }
+        nav {
+            margin: 20px 0;
+        }
+        button {
+            background-color: #111;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            border-radius: 6px;
+            padding: 10px 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover, button.active {
+            background-color: #ff0000;
+            color: #000;
+        }
+        section.form-section {
+            display: none;
+            background-color: #111;
+            border: 1px solid #ff0000;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 600px;
+        }
+        section.form-section.active {
+            display: block;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="date"], input[type="number"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+        }
+        .submit-btn {
+            margin-top: 20px;
+            background-color: #ff0000;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <h1><span class="skull">💀</span> SGB - Sistema de Gestão do BOPE</h1>
+
+    <nav>
+        <button id="btn-efetivo" class="active">Efetivo</button>
+        <button id="btn-escala">Escala</button>
+        <button id="btn-manutencao">Manutenção</button>
+        <button id="btn-permuta">Permuta</button>
+    </nav>
+
+    <!-- Efetivo -->
+    <section id="efetivo" class="form-section active">
+        <h2>Cadastro Efetivo</h2>
+        <form>
+            <label for="nome-efetivo">Nome:</label>
+            <input type="text" id="nome-efetivo" name="nome-efetivo" required />
+
+            <label for="posto-efetivo">Posto/Graduação:</label>
+            <input type="text" id="posto-efetivo" name="posto-efetivo" required />
+
+            <button type="submit" class="submit-btn">Salvar Efetivo</button>
+        </form>
+    </section>
+
+    <!-- Escala -->
+    <section id="escala" class="form-section">
+        <h2>Cadastro Escala</h2>
+        <form>
+            <label for="descricao-escala">Descrição da Escala:</label>
+            <textarea id="descricao-escala" name="descricao-escala" rows="3" required></textarea>
+
+            <label for="data-inicio-escala">Data Início:</label>
+            <input type="date" id="data-inicio-escala" name="data-inicio-escala" required />
+
+            <label for="data-fim-escala">Data Fim:</label>
+            <input type="date" id="data-fim-escala" name="data-fim-escala" required />
+
+            <button type="submit" class="submit-btn">Salvar Escala</button>
+        </form>
+    </section>
+
+    <!-- Manutenção -->
+    <section id="manutencao" class="form-section">
+        <h2>Cadastro Manutenção</h2>
+        <form>
+            <label for="descricao-manutencao">Descrição da Manutenção:</label>
+            <textarea id="descricao-manutencao" name="descricao-manutencao" rows="3" required></textarea>
+
+            <label for="data-manutencao">Data:</label>
+            <input type="date" id="data-manutencao" name="data-manutencao" required />
+
+            <button type="submit" class="submit-btn">Salvar Manutenção</button>
+        </form>
+    </section>
+
+    <!-- Permuta -->
+    <section id="permuta" class="form-section">
+        <h2>Cadastro Permuta</h2>
+        <form>
+            <label for="descricao-permuta">Descrição da Permuta:</label>
+            <textarea id="descricao-permuta" name="descricao-permuta" rows="3" required></textarea>
+
+            <label for="data-permuta">Data:</label>
+            <input type="date" id="data-permuta" name="data-permuta" required />
+
+            <label for="autorizado-permuta">Autorizado por:</label>
+            <input type="text" id="autorizado-permuta" name="autorizado-permuta" />
+
+            <button type="submit" class="submit-btn">Salvar Permuta</button>
+        </form>
+    </section>
+
+    <script>
+        // Seleciona botões e seções
+        const btnEfetivo = document.getElementById('btn-efetivo');
+        const btnEscala = document.getElementById('btn-escala');
+        const btnManutencao = document.getElementById('btn-manutencao');
+        const btnPermuta = document.getElementById('btn-permuta');
+
+        const secEfetivo = document.getElementById('efetivo');
+        const secEscala = document.getElementById('escala');
+        const secManutencao = document.getElementById('manutencao');
+        const secPermuta = document.getElementById('permuta');
+
+        function hideAllSections() {
+            secEfetivo.classList.remove('active');
+            secEscala.classList.remove('active');
+            secManutencao.classList.remove('active');
+            secPermuta.classList.remove('active');
+
+            btnEfetivo.classList.remove('active');
+            btnEscala.classList.remove('active');
+            btnManutencao.classList.remove('active');
+            btnPermuta.classList.remove('active');
+        }
+
+        btnEfetivo.addEventListener('click', () => {
+            hideAllSections();
+            secEfetivo.classList.add('active');
+            btnEfetivo.classList.add('active');
+        });
+        btnEscala.addEventListener('click', () => {
+            hideAllSections();
+            secEscala.classList.add('active');
+            btnEscala.classList.add('active');
+        });
+        btnManutencao.addEventListener('click', () => {
+            hideAllSections();
+            secManutencao.classList.add('active');
+            btnManutencao.classList.add('active');
+        });
+        btnPermuta.addEventListener('click', () => {
+            hideAllSections();
+            secPermuta.classList.add('active');
+            btnPermuta.classList.add('active');
+        });
+    </script>
+</body>
+</html>
