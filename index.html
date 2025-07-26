@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>💀 SGB - Sistema de Gestão do BOPE</title>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<!-- FontAwesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+
+<style>
+  body {
+    background-color: #000000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 20px auto;
+    max-width: 900px;
+  }
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    color: #ff0000;
+  }
+  h1 .skull {
+    font-size: 2.5rem;
+  }
+  nav {
+    margin: 20px 0;
+  }
+  button.nav-btn {
+    background-color: #111;
+    color: #ff0000;
+    border: 2px solid #ff0000;
+    border-radius: 6px;
+    padding: 10px 20px;
+    margin-right: 15px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  button.nav-btn:hover, button.nav-btn.active {
+    background-color: #ff0000;
+    color: #000;
+  }
+  section.form-section {
+    display: none;
+    background-color: #111;
+    border: 1px solid #ff0000;
+    border-radius: 6px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  section.form-section.active {
+    display: block;
+  }
+  form {
+    max-width: 600px;
+  }
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+    user-select: none;
+  }
+  input[type="text"], input[type="date"], textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background: #220000;
+    color: #fff;
+    border-color: #550000;
+  }
+  textarea {
+    resize: vertical;
+  }
+  input[type="text"]:focus, input[type="date"]:focus, textarea:focus {
+    border-color: #ff0000;
+    outline: none;
+    background: #330000;
+  }
+  button.submit-btn {
+    margin-top: 20px;
+    background-color: #ff0000;
+    color: #000;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  button.submit-btn:disabled {
+    background-color: #660000;
+    cursor: not-allowed;
+    color: #330000;
+  }
+  button.submit-btn:hover:not(:disabled) {
+    background-color: #cc0000;
+  }
+  #searchInput {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0 15px 0;
+    border-radius: 8px;
+    border: 1px solid #550000;
+    background: #330000;
+    color: #fff;
+    font-size: 1rem;
+  }
+  #searchInput:focus {
+    border-color: #ff0000;
+    outline: none;
+    background: #440000;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    border: 1px solid #550000;
+    padding: 10px;
+    text-align: left;
+  }
+  th {
+    background: #440000;
+    color: #ff5555;
+  }
+  tbody tr:nth-child(even) {
+    background: #330000;
+  }
+  .export-btn {
+    margin-bottom: 15px;
+    background-color: #ff0000;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .export-btn:hover {
+    background-color: #cc0000;
+  }
+</style>
+</head>
+<body>
+
+<h1><span class="skull">💀</span> SGB - Sistema de Gestão do BOPE</h1>
+
+<nav>
+  <button class="nav-btn active" data-target="efetivo">Efetivo</button>
+  <button class="nav-btn" data-target="escala">Escala</button>
+  <button class="nav-btn" data-target="manutencao">Manutenção</button>
+  <button class="nav-btn" data-target="permuta">Permuta</button>
+</nav>
+
+<!-- Efetivo -->
+<section id="efetivo" class="form-section active">
+  <h2>Cadastro Efetivo</h2>
+  <form id="formEfetivo" novalidate>
+    <label for="nomeEfetivo">Nome:</label>
+    <input type="text" id="nomeEfetivo" name="nomeEfetivo" required minlength="3" />
+    
+    <label for="postoEfetivo">Posto/Graduação:</label>
+    <input type="text" id="postoEfetivo" name="postoEfetivo" required minlength="2" />
+    
+    <button type="submit" class="submit-btn" disabled><i class="fa-solid fa-floppy-disk"></i> Salvar Efetivo</button>
+  </form>
+  <input type="text" id="searchEfetivo" placeholder="Pesquisar por nome..." />
+  <button class="export-btn" id="exportEfetivo"><i class="fa-solid fa-file-export"></i> Exportar CSV</button>
+  <table aria-label="Lista Efetivo">
+    <thead><tr><th>Nome</th><th>Posto/Graduação</th><th>Cadastrado em</th></tr></thead>
+    <tbody id="listaEfetivo"></tbody>
+  </table>
+</section>
+
+<!-- Escala -->
+<section id="escala" class="form-section">
+  <h2>Cadastro Escala</h2>
+  <form id="formEscala" novalidate>
+    <label for="descEscala">Descrição da Escala:</label>
+    <textarea id="descEscala" name="descEscala" rows="3" required></textarea>
+
+    <label for="dataInicioEscala">Data Início:</label>
+    <input type="date" id="dataInicioEscala" name="dataInicioEscala" required />
+    
+    <label for="dataFimEscala">Data Fim:</label>
+    <input type="date" id="dataFimEscala" name="dataFimEscala" required />
+    
+    <button type="submit" class="submit-btn" disabled><i class="fa-solid fa-floppy-disk"></i> Salvar Escala</button>
+  </form>
+  <input type="text" id="searchEscala" placeholder="Pesquisar por descrição..." />
+  <button class="export-btn" id="exportEscala"><i class="fa-solid fa-file-export"></i> Exportar CSV</button>
+  <table aria-label="Lista Escala">
+    <thead><tr><th>Descrição</th><th>Data Início</th><th>Data Fim</th><th>Cadastrado em</th></tr></thead>
+    <tbody id="listaEscala"></tbody>
+  </table>
+</section>
+
+<!-- Manutenção -->
+<section id="manutencao" class="form-section">
+  <h2>Cadastro Manutenção</h2>
+  <form id="formManutencao" novalidate>
+    <label for="descManutencao">Descrição da Manutenção:</label>
+    <textarea id="descManutencao" name="descManutencao" rows="3" required></textarea>
+
+    <label for="dataManutencao">Data:</label>
+    <input type="date" id="dataManutencao" name="dataManutencao" required />
+    
+    <button type="submit" class="submit-btn" disabled><i class="fa-solid fa-floppy-disk"></i> Salvar Manutenção</button>
+  </form>
+  <input type="text" id="searchManutencao" placeholder="Pesquisar por descrição..." />
+  <button class="export-btn" id="exportManutencao"><i class="fa-solid fa-file-export"></i> Exportar CSV</button>
+  <table aria-label="Lista Manutenção">
+    <thead><tr><th>Descrição</th><th>Data</th><th>Cadastrado em</th></tr></thead>
+    <tbody id="listaManutencao"></tbody>
+  </table>
+</section>
+
+<!-- Permuta -->
+<section id="permuta" class="form-section">
+  <h2>Cadastro Permuta</h2>
+  <form id="formPermuta" novalidate>
+    <label for="descPermuta">Descrição da Permuta:</label>
+    <textarea id="descPermuta" name="descPermuta" rows="3" required></textarea>
+
+    <label for="dataPermuta">Data:</label>
+    <input type="date" id="dataPermuta" name="dataPermuta" required />
+    
+    <label for="autorizadoPermuta">Autorizado por:</label>
+    <input type="text" id="autorizadoPermuta" name="autorizadoPermuta" />
+    
+    <button type="submit" class="submit-btn" disabled><i class="fa-solid fa-floppy-disk"></i> Salvar Permuta</button>
+  </form>
+  <input type="text" id="searchPermuta" placeholder="Pesquisar por descrição..." />
+  <button class="export-btn" id="exportPermuta"><i class="fa-solid fa-file-export"></i> Exportar CSV</button>
+  <table aria-label="Lista Permuta">
+    <thead><tr><th>Descrição</th><th>Data</th><th>Autorizado por</th><th>Cadastrado em</th></tr></thead>
+    <tbody id="listaPermuta"></tbody>
+  </table>
+</section>
+
+<script>
+  // Firebase config: substitua pelos seus dados do Firebase Console
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Navegação entre seções
+  const navButtons = document.querySelectorAll('button.nav-btn');
+  const sections = document.querySelectorAll('section.form-section');
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.getAttribute('data-target');
+      sections.forEach(sec => {
+        sec.classList.toggle('active', sec.id === target);
+      });
+    });
+  });
+
+  // Função para habilitar botão de submit se form válido
+  function enableSubmitOnInput(form) {
+    const submitBtn = form.querySelector('button.submit-btn');
+    form.addEventListener('input', () => {
+      submitBtn.disabled = !form.checkValidity();
+    });
+  }
+
+  // Função para exportar CSV
+  function exportToCSV(filename, header, rows) {
+    if (!rows.length) {
+      alert('Nenhum dado para exportar!');
+      return;
+    }
+
+    let csvContent = 'data:text/csv;charset=utf-8,';
+    csvContent += header.join(',') + '\n';
+    rows.forEach(row => {
+      const escaped = row.map(field => `"${String(field).replace(/"/g, '""')}"`);
+      csvContent += escaped.join(',') + '\n';
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.href = encodedUri;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // ------- EFETIVO -------
+
+  const formEfetivo = document.getElementById('formEfetivo');
+  const nomeEfetivo = document.getElementById('nomeEfetivo');
+  const postoEfetivo = document.getElementById('postoEfetivo');
+  const listaEfetivo = document.getElementById('listaEfetivo');
+  const searchEfetivo = document.getElementById('searchEfetivo');
+  const exportEfetivo = document.getElementById('exportEfetivo');
+  let dadosEfetivo = [];
+
+  enableSubmitOnInput(formEfetivo);
+
+  formEfetivo.addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await db.collection('efetivo').add({
+        nome: nomeEfetivo.value.trim(),
+        posto: postoEfetivo.value.trim(),
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      formEfetivo.reset();
+      formEfetivo.querySelector('button.submit-btn').disabled = true;
+    } catch (err) {
+      alert('Erro ao salvar Efetivo: ' + err.message);
+    }
+  });
+
+  function mostrarEfetivo(filtro = '') {
+    filtro = filtro.toLowerCase();
+    listaEfetivo.innerHTML = '';
+    const filtrados = dadosEfetivo.filter(d => d.nome.toLowerCase().includes(filtro));
+    filtrados.forEach(({ nome, posto, criadoEm }) => {
+      const tr = document.createElement('tr');
+      const data = criadoEm ? new Date(criadoEm.seconds * 1000).toLocaleString('pt-BR') : '—';
+      tr.innerHTML = `<td>${nome}</td><td>${posto}</td><td>${data}</td>`;
+      listaEfetivo.appendChild(tr);
+    });
+  }
+
+  db.collection('efetivo').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+    dadosEfetivo = [];
+    snapshot.forEach(doc => dadosEfetivo.push({ id: doc.id, ...doc.data() }));
+    mostrarEfetivo(searchEfetivo.value);
+  });
+
+  searchEfetivo.addEventListener('input', () => mostrarEfetivo(searchEfetivo.value));
+
+  exportEfetivo.addEventListener('click', () => {
+    const filtro = searchEfetivo.value.toLowerCase();
+    const filtrados = dadosEfetivo.filter(d => d.nome.toLowerCase().includes(filtro));
+    const header = ['Nome', 'Posto/Graduação', 'Cadastrado em'];
+    const rows = filtrados.map(({ nome, posto, criadoEm }) => [
+      nome,
+      posto,
+      criadoEm ? new Date(criadoEm.seconds * 1000).toLocaleString('pt-BR') : ''
+    ]);
+    exportToCSV('efetivo.csv', header, rows);
+  });
+
+  // ------- ESCALA -------
+
+  const formEscala = document.getElementById('formEscala');
+  const descEscala = document.getElementById('descEscala');
+  const dataInicioEscala = document.getElementById('dataInicioEscala');
+  const dataFimEscala = document.getElementById('dataFimEscala');
+  const listaEscala = document.getElementById('listaEscala');
+  const searchEscala = document.getElementById('searchEscala');
+  const exportEscala = document.getElementById('exportEscala');
+  let dadosEscala = [];
+
+  enableSubmitOnInput(formEscala);
+
+  formEscala.addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await db.collection('escala').add({
+        descricao: descEscala.value.trim(),
+        dataInicio: dataInicioEscala.value,
+        dataFim: dataFimEscala.value,
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      formEscala.reset();
+      formEscala.querySelector('button.submit-btn').disabled = true;
+    } catch (err) {
+      alert('Erro ao salvar Escala: ' + err.message);
+    }
+  });
+
+  function mostrarEscala(filtro = '') {
+    filtro = filtro.toLowerCase();
+    listaEscala.innerHTML = '';
+    const filtrados = dadosEscala.filter(d => d.descricao.toLowerCase().includes(filtro));
+    filtrados.forEach(({ descricao, dataInicio, dataFim, criadoEm }) => {
+      const tr = document.createElement('tr');
+      const criado = criadoEm ? new Date(criadoEm.seconds * 1000).toLocaleString('pt-BR') : '—';
+      tr.innerHTML = `<td>${descricao}</td><td>${dataInicio}</td><td>${dataFim}</td><td>${criado}</td>`;
+      listaEscala.appendChild(tr);
+    });
+  }
+
+  db.collection('escala').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+    dadosEscala = [];
+    snapshot.forEach(doc => dadosEscala.push({ id: doc.id, ...doc.data() }));
+    mostrarEscala(searchEscala.value);
+  });
+
+  searchEscala.addEventListener('input', () => mostrarEscala(searchEscala.value));
+
+  exportEscala.addEventListener('click', () => {
+    const filtro = searchEscala.value.toLowerCase();
+    const filtrados = dadosEscala.filter(d => d.descricao.toLowerCase().includes(filtro));
+    const header = ['Descrição', 'Data Início', 'Data Fim', 'Cadastrado em'];
+    const rows = filtrados.map(({ descricao, dataInicio, dataFim, criadoEm }) => [
+      descricao,
+      dataInicio,
+      dataFim,
+      criadoEm ? new Date(criadoEm.seconds * 1000).toLocaleString('pt-BR') : ''
+    ]);
+    exportToCSV('escala.csv', header, rows);
+  });
+
+  // ------- MANUTENÇÃO -------
+
+  const formManutencao = document.getElementById('formManutencao');
+  const descManutencao = document.getElementById('descManutencao');
+  const dataManutencao = document.getElementById('dataManutencao');
+  const listaManutencao = document.getElementById('listaManutencao');
+  const searchManutencao = document.getElementById('searchManutencao');
+  const exportManutencao = document.getElementById('exportManutencao');
+  let dadosManutencao = [];
+
+  enableSubmitOnInput(formManutencao);
+
+  formManutencao.addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await db.collection('manutencao').add({
+        descricao: descManutencao.value.trim(),
+        data: dataManutencao.value,
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      formManutencao.reset();
+      formManutencao.querySelector('button.submit-btn').disabled = true;
+    } catch (err) {
+      alert('Erro ao salvar Manutenção: ' + err.message);
+    }
+  });
+
+  function mostrarManutencao(filtro = '') {
+    filtro = filtro.toLowerCase();
+    listaManutencao.innerHTML = '';
+    const filtrados = dadosManutencao.filter(d => d.descricao.toLowerCase().includes(filtro));
+    filtrados.forEach(({ descricao, data, criadoEm }) => {
+      const tr = document.createElement('tr');
+      const criado = criadoEm ? new Date(criadoEm.seconds * 1000).toLocaleString('pt-BR') : '—';
+      tr.innerHTML = `<td>${descricao}</td><td>${data}</td><td>${criado}</td>`;
+      listaManutencao.appendChild(tr);
+    });
+  }
+
+  db.collection('manutencao').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+    dadosManutencao = [];
+    snapshot.forEach(doc => dadosManutencao.push({ id: doc.id, ...doc.data() }));
+    mostrarManutencao(searchManutencao.value);
+  });
+
+  searchManutencao.addEventListener('input', () => mostrarManutencao(searchManutencao.value));
+
+  exportManutencao.addEventListener('click', () => {
+    const filtro = searchManutencao.value.toLowerCase();
+    const filtrados = dadosManutencao.filter(d => d.descricao.toLowerCase().includes(filtro));
+    const header = ['Descrição', 'Data', 'Cadastrado em'];
+    const rows = filtrados.map(({ descricao, data, criadoEm }) => [
+      descricao,
+      data,
+      criadoEm ? new Date(criadoEm.seconds * 1000).toLocaleString('pt-BR') : ''
+    ]);
+    exportToCSV('manutencao.csv', header, rows);
+  });
+
+  // ------- PERMUTA -------
+
+  const formPermuta = document.getElementById('formPermuta');
+  const descPermuta = document.getElementById('descPermuta');
+  const dataPermuta = document.getElementById('dataPermuta');
+  const autorizadoPermuta = document.getElementById('autorizadoPermuta');
+  const listaPermuta = document.getElementById('listaPermuta');
+  const searchPermuta = document.getElementById('searchPermuta');
+  const exportPermuta = document.getElementById('exportPermuta');
+  let dadosPermuta = [];
+
+  enableSubmitOnInput(formPermuta);
+
+  formPermuta.addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await db.collection('permuta').add({
+        descricao: descPermuta.value.trim(),
+        data: dataPermuta.value,
+        autorizadoPor: autorizadoPermuta.value.trim(),
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      formPermuta.reset();
+      formPermuta.querySelector('button.submit-btn').disabled = true;
+    } catch (err) {
+      alert('Erro ao salvar Permuta: ' + err.message);
+    }
+  });
+
+  function mostrarPermuta(filtro = '') {
+    filtro = filtro.toLowerCase();
+    listaPermuta.innerHTML = '';
+    const filtrados = dadosPermuta.filter(d => d.descricao.toLowerCase().includes(filtro));
+    filtrados.forEach(({ descricao, data, autorizadoPor, criadoEm }) => {
+      const tr = document.createElement('tr');
+      const criado = criadoEm ? new Date(criadoEm.seconds * 1000).toLocaleString('pt-BR') : '—';
+      tr.innerHTML = `<td>${descricao}</td><td>${data}</td><td>${autorizadoPor || ''}</td><td>${criado}</td>`;
+      listaPermuta.appendChild(tr);
+    });
+  }
+
+  db.collection('permuta').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+    dadosPermuta = [];
+    snapshot.forEach(doc => dadosPermuta.push({ id: doc.id, ...doc.data() }));
+    mostrarPermuta(searchPermuta.value);
+  });
+
+  searchPermuta.addEventListener('input', () => mostrarPermuta(searchPermuta.value));
+
+  exportPermuta.addEventListener('click', () => {
+    const filtro = searchPermuta.value.toLowerCase();
+    const filtrados = dadosPermuta.filter(d => d.descricao.toLowerCase().includes(filtro));
+    const header = ['Descrição', 'Data', 'Autorizado por', 'Cadastrado em'];
+    const rows = filtrados.map(({ descricao, data, autorizadoPor, criadoEm }) => [
+      descricao,
+      data,
+      autorizadoPor || '',
+      criadoEm ? new Date(criadoEm.seconds * 1000).toLocaleString('pt-BR') : ''
+    ]);
+    exportToCSV('permuta.csv', header, rows);
+  });
+</script>
+
+</body>
+</html>
