@@ -161,6 +161,239 @@
         const btnEfetivo = document.getElementById('btn-efetivo');
         const btnEscala = document.getElementById('btn-escala');
         const btnManutencao = document.getElementById('btn-manutencao');
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>💀 SGB - Sistema de Gestão do BOPE</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+        h1 .skull {
+            font-size: 32px;
+            color: #ff0000; /* vermelho */
+        }
+        nav {
+            margin: 20px 0;
+        }
+        button {
+            background-color: #111;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            border-radius: 6px;
+            padding: 10px 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover, button.active {
+            background-color: #ff0000;
+            color: #000;
+        }
+        section.form-section {
+            display: none;
+            background-color: #111;
+            border: 1px solid #ff0000;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 600px;
+        }
+        section.form-section.active {
+            display: block;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="date"], input[type="number"], input[type="password"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+        }
+        .submit-btn {
+            margin-top: 20px;
+            background-color: #ff0000;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #cc0000;
+        }
+        /* Novos estilos para login */
+        #login-section {
+            background-color: #111;
+            border: 1px solid #ff0000;
+            border-radius: 6px;
+            padding: 20px;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        #login-section h2 {
+            margin-top: 0;
+        }
+        #user-info {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        #logout-btn {
+            background-color: #ff0000;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        #logout-btn:hover {
+            background-color: #cc0000;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <h1><span class="skull">💀</span> SGB - Sistema de Gestão do BOPE</h1>
+
+    <section id="login-section">
+        <h2>Login / Cadastro</h2>
+        <div id="user-info" class="hidden"></div>
+        <form id="auth-form">
+            <label for="email">Email:</label>
+            <input type="text" id="email" required />
+            <label for="password">Senha:</label>
+            <input type="password" id="password" required />
+            <button type="submit" class="submit-btn">Entrar / Cadastrar</button>
+        </form>
+        <button id="logout-btn" class="hidden">Sair</button>
+    </section>
+
+    <nav id="main-nav" class="hidden">
+        <button id="btn-efetivo" class="active">Efetivo</button>
+        <button id="btn-escala">Escala</button>
+        <button id="btn-manutencao">Manutenção</button>
+        <button id="btn-permuta">Permuta</button>
+    </nav>
+
+    <!-- Efetivo -->
+    <section id="efetivo" class="form-section active">
+        <h2>Cadastro Efetivo</h2>
+        <form id="form-efetivo">
+            <label for="nome-efetivo">Nome:</label>
+            <input type="text" id="nome-efetivo" name="nome-efetivo" required />
+
+            <label for="posto-efetivo">Posto/Graduação:</label>
+            <input type="text" id="posto-efetivo" name="posto-efetivo" required />
+
+            <button type="submit" class="submit-btn">Salvar Efetivo</button>
+        </form>
+    </section>
+
+    <!-- Escala -->
+    <section id="escala" class="form-section">
+        <h2>Cadastro Escala</h2>
+        <form id="form-escala">
+            <label for="descricao-escala">Descrição da Escala:</label>
+            <textarea id="descricao-escala" name="descricao-escala" rows="3" required></textarea>
+
+            <label for="data-inicio-escala">Data Início:</label>
+            <input type="date" id="data-inicio-escala" name="data-inicio-escala" required />
+
+            <label for="data-fim-escala">Data Fim:</label>
+            <input type="date" id="data-fim-escala" name="data-fim-escala" required />
+
+            <button type="submit" class="submit-btn">Salvar Escala</button>
+        </form>
+    </section>
+
+    <!-- Manutenção -->
+    <section id="manutencao" class="form-section">
+        <h2>Cadastro Manutenção</h2>
+        <form id="form-manutencao">
+            <label for="descricao-manutencao">Descrição da Manutenção:</label>
+            <textarea id="descricao-manutencao" name="descricao-manutencao" rows="3" required></textarea>
+
+            <label for="data-manutencao">Data:</label>
+            <input type="date" id="data-manutencao" name="data-manutencao" required />
+
+            <button type="submit" class="submit-btn">Salvar Manutenção</button>
+        </form>
+    </section>
+
+    <!-- Permuta -->
+    <section id="permuta" class="form-section">
+        <h2>Cadastro Permuta</h2>
+        <form id="form-permuta">
+            <label for="descricao-permuta">Descrição da Permuta:</label>
+            <textarea id="descricao-permuta" name="descricao-permuta" rows="3" required></textarea>
+
+            <label for="data-permuta">Data:</label>
+            <input type="date" id="data-permuta" name="data-permuta" required />
+
+            <label for="autorizado-permuta">Autorizado por:</label>
+            <input type="text" id="autorizado-permuta" name="autorizado-permuta" />
+
+            <button type="submit" class="submit-btn">Salvar Permuta</button>
+        </form>
+    </section>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+
+    <script>
+        // --- Configuração Firebase - substitua pelos seus dados ---
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        // Inicializa Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Elementos UI
+        const loginSection = document.getElementById('login-section');
+        const userInfo = document.getElementById('user-info');
+        const authForm = document.getElementById('auth-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const mainNav = document.getElementById('main-nav');
+
+        const btnEfetivo = document.getElementById('btn-efetivo');
+        const btnEscala = document.getElementById('btn-escala');
+        const btnManutencao = document.getElementById('btn-manutencao');
         const btnPermuta = document.getElementById('btn-permuta');
 
         const secEfetivo = document.getElementById('efetivo');
@@ -168,6 +401,7 @@
         const secManutencao = document.getElementById('manutencao');
         const secPermuta = document.getElementById('permuta');
 
+        // Controle visual de seções do formulário
         function hideAllSections() {
             secEfetivo.classList.remove('active');
             secEscala.classList.remove('active');
@@ -200,6 +434,164 @@
             secPermuta.classList.add('active');
             btnPermuta.classList.add('active');
         });
+
+        // Gerenciar estado do usuário
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Usuário logado
+                loginSection.classList.add('hidden');
+                mainNav.classList.remove('hidden');
+                userInfo.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+
+                userInfo.textContent = `Logado como: ${user.email}`;
+            } else {
+                // Usuário deslogado
+                loginSection.classList.remove('hidden');
+                mainNav.classList.add('hidden');
+                userInfo.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+
+                // Ocultar formulários quando deslogado
+                hideAllSections();
+            }
+        });
+
+        // Login e cadastro (único formulário)
+        authForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Primeiro tenta login
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    alert("Logado com sucesso!");
+                    authForm.reset();
+                })
+                .catch(err => {
+                    if (err.code === 'auth/user-not-found') {
+                        // Se usuário não existe, cria um novo
+                        auth.createUserWithEmailAndPassword(email, password)
+                            .then(() => {
+                                alert("Conta criada e logado!");
+                                authForm.reset();
+                            })
+                            .catch(error => {
+                                alert("Erro ao criar conta: " + error.message);
+                            });
+                    } else {
+                        alert("Erro no login: " + err.message);
+                    }
+                });
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut();
+        });
+
+        // Função salvar dados no Firestore
+        function salvarRegistro(colecao, dados) {
+            return db.collection(colecao).add(dados)
+                .then(docRef => {
+                    alert(`Registro salvo com ID: ${docRef.id}`);
+                })
+                .catch(error => {
+                    alert(`Erro ao salvar: ${error.message}`);
+                });
+        }
+
+        // Eventos dos formulários
+
+        // Efetivo
+        document.getElementById('form-efetivo').addEventListener('submit', e => {
+            e.preventDefault();
+            const nome = document.getElementById('nome-efetivo').value.trim();
+            const posto = document.getElementById('posto-efetivo').value.trim();
+
+            if (!nome || !posto) {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            salvarRegistro('efetivo', {
+                nome,
+                posto,
+                criadoEm: new Date(),
+                usuario: auth.currentUser.email
+            }).then(() => {
+                e.target.reset();
+            });
+        });
+
+        // Escala
+        document.getElementById('form-escala').addEventListener('submit', e => {
+            e.preventDefault();
+            const descricao = document.getElementById('descricao-escala').value.trim();
+            const dataInicio = document.getElementById('data-inicio-escala').value;
+            const dataFim = document.getElementById('data-fim-escala').value;
+
+            if (!descricao || !dataInicio || !dataFim) {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            salvarRegistro('escala', {
+                descricao,
+                dataInicio,
+                dataFim,
+                criadoEm: new Date(),
+                usuario: auth.currentUser.email
+            }).then(() => {
+                e.target.reset();
+            });
+        });
+
+        // Manutenção
+        document.getElementById('form-manutencao').addEventListener('submit', e => {
+            e.preventDefault();
+            const descricao = document.getElementById('descricao-manutencao').value.trim();
+            const data = document.getElementById('data-manutencao').value;
+
+            if (!descricao || !data) {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            salvarRegistro('manutencao', {
+                descricao,
+                data,
+                criadoEm: new Date(),
+                usuario: auth.currentUser.email
+            }).then(() => {
+                e.target.reset();
+            });
+        });
+
+        // Permuta
+        document.getElementById('form-permuta').addEventListener('submit', e => {
+            e.preventDefault();
+            const descricao = document.getElementById('descricao-permuta').value.trim();
+            const data = document.getElementById('data-permuta').value;
+            const autorizadoPor = document.getElementById('autorizado-permuta').value.trim();
+
+            if (!descricao || !data) {
+                alert("Preencha os campos obrigatórios!");
+                return;
+            }
+
+            salvarRegistro('permuta', {
+                descricao,
+                data,
+                autorizadoPor,
+                criadoEm: new Date(),
+                usuario: auth.currentUser.email
+            }).then(() => {
+                e.target.reset();
+            });
+        });
+
     </script>
 </body>
 </html>
