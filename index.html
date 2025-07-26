@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGB - Sistema de Gestão do BOPE</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: black url('Images/imagesfundo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: red;
+    }
+    header {
+      background-color: #111;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+    }
+    .painel {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      margin: 20px;
+      border-radius: 10px;
+      color: #ff4d4d;
+    }
+    .btn {
+      background-color: red;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: darkred;
+    }
+    .section {
+      display: none;
+      margin: 20px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 10px;
+      padding: 20px;
+      color: #ff4d4d;
+    }
+    input, textarea {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    /* Visibilidade inicial para Efetivo */
+    #efetivo {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SGB - Sistema de Gestão do BOPE</h1>
+  </header>
+
+  <!-- Palavras do Comandante Editável -->
+  <section
+    id="palavras-comandante"
+    contenteditable="true"
+    spellcheck="false"
+    aria-label="Palavras do Comandante"
+    role="region"
+    tabindex="0"
+    style="min-height:120px; padding:20px; background:#220000; border: 2px solid #ff0000; border-radius:8px; color:#ff4d4d; margin: 20px; user-select: text;"
+  >
+    <h2 style="margin-top:0; user-select:none;">Palavras do Comandante</h2>
+    <p>Manter a honra, a disciplina e o compromisso com a missão são pilares do nosso batalhão. Honra e coragem!</p>
+    <p class="assinatura" style="font-style:italic; font-weight:bold; margin-top:12px; color:#ff9999; user-select:none;">— MAJ. QOPM Leandro Moraes</p>
+  </section>
+
+  <!-- Quadro de Aviso Editável -->
+  <section
+    id="aviso"
+    contenteditable="true"
+    spellcheck="false"
+    aria-label="Quadro de Aviso"
+    role="region"
+    tabindex="0"
+    style="min-height:100px; padding:20px; background:#220000; border: 2px solid #ff0000; border-radius:8px; color:#ff4d4d; margin: 20px; user-select: text;"
+  >
+    <h2 style="margin-top:0; user-select:none;">Aviso</h2>
+    <p>Todos os Militares dessa unidade devem enviar sua foto 3x4 para recadastramento dos servidores ao sistema. - Cap. QOPM VINICIUS /P1-BOPE.</p>
+  </section>
+
+  <div class="painel">
+    <button class="btn" onclick="showSection('efetivo')">Efetivo</button>
+    <button class="btn" onclick="showSection('escala')">Escala</button>
+    <button class="btn" onclick="showSection('manutencao')">Manutenção</button>
+    <button class="btn" onclick="showSection('permuta')">Permutas</button>
+  </div>
+
+  <div id="efetivo" class="section">
+    <h2>Cadastro de Efetivo</h2>
+    <input id="nome" placeholder="Nome completo" />
+    <input id="funcao" placeholder="Função" />
+    <input id="posto" placeholder="Posto ou graduação" />
+    <button class="btn" onclick="salvarEfetivo()">Salvar Efetivo</button>
+    <div id="listaEfetivo"></div>
+  </div>
+
+  <div id="escala" class="section">
+    <h2>Escala de Serviço</h2>
+    <p>Em breve</p>
+  </div>
+
+  <div id="manutencao" class="section">
+    <h2>Controle de Manutenção</h2>
+    <p>Em breve</p>
+  </div>
+
+  <div id="permuta" class="section">
+    <h2>Autorização de Permutas</h2>
+    <p>Em breve</p>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_AUTH_DOMAIN",
+      projectId: "SEU_PROJECT_ID",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+
+    async function salvarEfetivo() {
+      const nome = document.getElementById('nome').value;
+      const funcao = document.getElementById('funcao').value;
+      const posto = document.getElementById('posto').value;
+      if (!nome || !funcao || !posto) {
+        alert('Por favor, preencha todos os campos!');
+        return;
+      }
+      await db.collection("efetivo").add({ nome, funcao, posto, data: new Date() });
+      listarEfetivo();
+      alert('Efetivo salvo com sucesso!');
+      document.getElementById('nome').value = '';
+      document.getElementById('funcao').value = '';
+      document.getElementById('posto').value = '';
+    }
+
+    async function listarEfetivo() {
+      const container = document.getElementById("listaEfetivo");
+      container.innerHTML = "<h3>Lista de Efetivo:</h3>";
+      const snapshot = await db.collection("efetivo").orderBy("data", "desc").get();
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        container.innerHTML += `<p><strong>${data.nome}</strong> - ${data.funcao} - ${data.posto}</p>`;
+      });
+    }
+
+    // Salvar texto editável no localStorage para persistir edição (Palavras do Comandante e Aviso)
+    const palavrasEl = document.getElementById('palavras-comandante');
+    const avisoEl = document.getElementById('aviso');
+
+    // Carregar do localStorage se existir
+    window.onload = () => {
+      listarEfetivo();
+      if(localStorage.getItem('palavrasComandante')) {
+        palavrasEl.innerHTML = localStorage.getItem('palavrasComandante');
+      }
+      if(localStorage.getItem('aviso')) {
+        avisoEl.innerHTML = localStorage.getItem('aviso');
+      }
+    };
+
+    // Salvar no localStorage ao perder foco (blur)
+    palavrasEl.addEventListener('blur', () => {
+      localStorage.setItem('palavrasComandante', palavrasEl.innerHTML);
+    });
+    avisoEl.addEventListener('blur', () => {
+      localStorage.setItem('aviso', avisoEl.innerHTML);
+    });
+  </script>
+</body>
+</html>
