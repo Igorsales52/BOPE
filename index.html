@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGB - Sistema de Gestão do BOPE</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('https://i.imgur.com/7VQeTrZ.jpg');
+      background-size: cover;
+      background-position: center;
+      color: #ccc;
+    }
+
+    header {
+      background-color: rgba(0, 0, 0, 0.85);
+      text-align: center;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: rgba(0, 0, 0, 0.75);
+      border: 1px solid #555;
+      border-radius: 12px;
+      padding: 20px;
+      width: 320px;
+      box-shadow: 0 0 10px #000;
+    }
+
+    .wide {
+      width: 660px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .card label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .card input, .card textarea {
+      width: 100%;
+      padding: 8px;
+      background-color: #222;
+      border: 1px solid #666;
+      border-radius: 5px;
+      color: #ccc;
+      margin-top: 4px;
+    }
+
+    .card button {
+      margin-top: 12px;
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      border: none;
+      color: #ccc;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .card button:hover {
+      background-color: #444;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    th, td {
+      border: 1px solid #555;
+      padding: 10px;
+      text-align: left;
+      color: #ccc;
+    }
+
+    th {
+      background-color: #222;
+    }
+
+    .section {
+      margin: 40px 20px 60px 20px;
+      background-color: rgba(0, 0, 0, 0.75);
+      border: 1px solid #555;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    footer {
+      text-align: center;
+      padding: 12px;
+      background-color: rgba(0, 0, 0, 0.85);
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    💀 SGB - Sistema de Gestão do BOPE
+  </header>
+
+  <div class="dashboard">
+    <!-- Palavras do Comandante -->
+    <div class="card wide">
+      <h2>Palavras do Comandante</h2>
+      <textarea rows="5" placeholder="Digite aqui a mensagem do comandante..."></textarea>
+      <button>Publicar</button>
+    </div>
+
+    <!-- Quadro de Avisos -->
+    <div class="card wide">
+      <h2>Quadro de Avisos</h2>
+      <textarea rows="5" placeholder="Digite um aviso importante para o efetivo..."></textarea>
+      <button>Publicar Aviso</button>
+    </div>
+
+    <!-- Efetivo -->
+    <div class="card">
+      <h2>Efetivo</h2>
+      <label>Nome:</label>
+      <input type="text" />
+      <label>Posto/Graduação:</label>
+      <input type="text" />
+      <button>Salvar</button>
+    </div>
+
+    <!-- Escala -->
+    <div class="card">
+      <h2>Escala</h2>
+      <label>Data:</label>
+      <input type="date" />
+      <label>Militar:</label>
+      <input type="text" />
+      <label>Função:</label>
+      <input type="text" />
+      <button>Salvar</button>
+    </div>
+
+    <!-- Manutenção -->
+    <div class="card">
+      <h2>Manutenção</h2>
+      <label>Equipamento:</label>
+      <input type="text" />
+      <label>Defeito:</label>
+      <input type="text" />
+      <label>Data:</label>
+      <input type="date" />
+      <button>Salvar</button>
+    </div>
+
+    <!-- Permutas -->
+    <div class="card">
+      <h2>Permutas</h2>
+      <label>Militar 1:</label>
+      <input type="text" />
+      <label>Militar 2:</label>
+      <input type="text" />
+      <label>Data da Permuta:</label>
+      <input type="date" />
+      <label>Autorizado por:</label>
+      <input type="text" />
+      <button>Salvar</button>
+    </div>
+  </div>
+
+  <!-- Quadro de Escala de Serviço -->
+  <div class="section">
+    <h2>Escala de Serviço</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Patente</th>
+          <th>Nome de Guerra</th>
+          <th>Telefone</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>26/07/2025</td>
+          <td>ST</td>
+          <td>ALMEIDA</td>
+          <td>(98) 99111-2233</td>
+        </tr>
+        <tr>
+          <td>26/07/2025</td>
+          <td>CB</td>
+          <td>SILVA</td>
+          <td>(98) 99222-3344</td>
+        </tr>
+        <tr>
+          <td>27/07/2025</td>
+          <td>SD</td>
+          <td>ROCHA</td>
+          <td>(98) 99333-4455</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Resumo Final -->
+  <div class="section">
+    <h2>Resumo Geral</h2>
+    <h3>Palavras do Comandante:</h3>
+    <p>"Manter a disciplina, o foco e o compromisso com a missão. -Maj.QOPM Moraes"</p>
+
+    <h3>Avisos:</h3>
+    <ul>
+      <li>Todos os Militares dessa unidade devem enviar sua foto 3x4 para recadastramento dos servidores ao sistema. - Cap. QOPM VINICIUS /P1-BOPE</li>
+      <li>Treinamento físico na sexta-feira, uniforme 3º B.</li>
+    </ul>
+
+    <h3>Efetivo Registrado:</h3>
+    <ul>
+      <li>ST ALMEIDA</li>
+      <li>CB KONG</li>
+      <li>SD JABULÃO</li>
+    </ul>
+
+    <h3>Escalas:</h3>
+    <ul>
+      <li>26/07 - ST ALMEIDA, SGT ARAGÃOCB SILVA</li>
+      <li>27/07 - SD GILBERTO</li>
+    </ul>
+
+    <h3>Manutenções:</h3>
+    <ul>
+      <li>Viatura BOPE 02 - Troca de bateria - 25/07</li>
+    </ul>
+
+    <h3>Permutas:</h3>
+    <ul>
+      <li>CB Pontes por SD Jabulão - 27/07 - Autorizado por: Cap. Vinicius</li>
+    </ul>
+  </div>
+
+  <footer>
+    &copy; 2025 - SGB - Sistema de Gestão do BOPE
+  </footer>
+</body>
+</html>
