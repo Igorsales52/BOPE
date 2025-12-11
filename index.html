@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>SGB - Sistema de Gestão do BOPE</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    /* RESET BÁSICO */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #000;
+      color: #bbb;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 16px;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      max-width: 900px;
+      background-color: #111;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
+    header img {
+      width: 36px;
+      height: 36px;
+      user-select: none;
+    }
+    header h1 {
+      color: #bbb;
+      font-size: 1.5rem;
+      margin: 0;
+      font-weight: 700;
+      user-select: none;
+    }
+    nav {
+      background-color: #111;
+      padding: 70px 15px 15px;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+    }
+    nav button {
+      background-color: #222;
+      color: #bbb;
+      border: 2px solid #444;
+      padding: 14px 26px;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 10px;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+      min-width: 110px;
+      text-align: center;
+      user-select: none;
+      flex: 1 1 130px;
+      max-width: 180px;
+    }
+    nav button.active,
+    nav button:hover {
+      background-color: #555;
+      color: #eee;
+      border-color: #aaa;
+    }
+    main {
+      background-color: #111;
+      width: 100%;
+      max-width: 900px;
+      margin-top: 15px;
+      padding: 25px 30px;
+      box-sizing: border-box;
+      border-radius: 12px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #bbb;
+      margin-bottom: 30px;
+      min-height: 60vh;
+      box-shadow: 0 0 12px #222 inset;
+    }
+    h2 {
+      color: #ddd;
+      margin-top: 0;
+      text-align: center;
+      font-weight: 700;
+      user-select: none;
+    }
+    .quadro {
+      background: #222;
+      border: 1px solid #333;
+      padding: 20px 25px;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 0 12px #111 inset;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      color: #bbb;
+      table-layout: fixed;
+      word-wrap: break-word;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      background: #333;
+      font-weight: 700;
+      user-select: none;
+    }
+    a {
+      color: #bbb;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+      color: #eee;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+      color: #bbb;
+      text-align: left;
+    }
+    input, select, textarea {
+      width: 100%;
+      max-width: 360px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      background-color: #222;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: #bbb;
+      font-size: 15px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #888;
+      outline: none;
+      color: #eee;
+    }
+    button.submit-btn {
+      margin-top: 18px;
+      background-color: #333;
+      color: #bbb;
+      border: 1px solid #555;
+      padding: 12px 28px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      user-select: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    button.submit-btn:hover {
+      background-color: #555;
+      color: #eee;
+    }
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #555 #222;
+    }
+    /* Scrollbar estilizada para Webkit */
+    .table-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    .table-container::-webkit-scrollbar-track {
+      background: #222;
+    }
+    .table-container::-webkit-scrollbar-thumb {
+      background-color: #555;
+      border-radius: 10px;
+      border: 2px solid #222;
+    }
+
+    /* Caixa filtro */
+    .filtro-container {
+      margin-top: 12px;
+      max-width: 360px;
+      width: 100%;
+    }
+    .filtro-container input {
+      font-size: 15px;
+      padding: 8px 12px;
+    }
+
+    /* Mensagem toast simples */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #444;
+      color: #eee;
+      padding: 12px 24px;
+      border-radius: 25px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 2000;
+      user-select: none;
+      font-weight: 600;
+      box-shadow: 0 0 10px #000 inset;
+    }
+    #toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 520px) {
+      nav button {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+      main {
+        padding: 20px 15px;
+        margin-bottom: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="favicon.ico" alt="Ícone SGB" />
+  <h1>SGB - SISTEMA DE GESTÃO DO BOPE</h1>
+</header>
+
+<nav>
+  <button id="btnDashboard" class="active">PERMANÊNCIA</button>
+  <button id="btnEfetivo">Efetivo</button>
+  <button id="btnEscala">Escala</button>
+  <button id="btnManutencao">Manutenção</button>
+  <button id="btnPermutas">Permutas</button>
+</nav>
+
+<main id="conteudo">
+  <!-- Conteúdo dinâmico -->
+</main>
+
+<div id="toast"></div>
+
+<script>
+  const SGB = (() => {
+    // Dados iniciais e localStorage keys
+    let militares = JSON.parse(localStorage.getItem('militares') || '[]');
+    let manutencoes = JSON.parse(localStorage.getItem('manutencoes') || '[]');
+    let permutas = JSON.parse(localStorage.getItem('permutas') || '[]');
+    const escalaDoDia = [
+      { patente: "1° TENENTE", nome: "Edivaldo Holanda", telefone: "(99) 99999-0001" },
+      { patente: "Sargento", nome: "Mr. Bean", telefone: "(99) 99999-0002" },
+      { patente: "Soldado", nome: "Chibata", telefone: "(99) 99999-0003" },
+    ];
+
+    const conteudo = document.getElementById('conteudo');
+    const botoes = document.querySelectorAll('nav button');
+    const toast = document.getElementById('toast');
+
+    // Função utilitária para mostrar toast
+    function showToast(msg, duration = 2500) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // Função utilitária para confirmar ação
+    function confirmarAcao(mensagem) {
+      return window.confirm(mensagem);
+    }
+
+    // Função para limpar botão ativo
+    function limparAtivo() {
+      botoes.forEach(b => b.classList.remove('active'));
+    }
+
+    // Função para criar filtro para uma tabela
+    function criarFiltro(idFiltro, onInputCallback) {
+      return `
+        <div class="filtro-container">
+          <input type="text" id="${idFiltro}" placeholder="Filtrar registros..." autocomplete="off" />
+        </div>
+      `;
+    }
+
+    // Renderiza o dashboard
+    function carregarDashboard() {
+      conteudo.innerHTML = `
+        <section id="dashboard" style="width: 100%;">
+          <div class="quadro" id="palavrasComandante">
+            <h2>Palavras do Comandante</h2>
+            <p style="text-align:center; font-style: italic; font-weight: 600;">
+              "Disciplina e coragem são o alicerce da nossa força." <br> - Maj. QOPM Moraes
+            </p>
+          </div>
+          <div class="quadro" id="quadroAvisos">
+            <h2>Avisos</h2>
+            <ul>
+              <li>Todos os operadores devem enviar sua foto 3x4 para atualização do cadastro. - Cap. QOPM Vinicius / P1-BOPE.</li>
+              <li>Atualização da escala de serviço disponível.</li>
+              <li>Entrega de equipamentos até sexta-feira.</li>
+            </ul>
+          </div>
+          <div class="quadro" id="escalaDia">
+            <h2>Escala do Dia</h2>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr><th>Patente</th><th>Nome de Guerra</th><th>Telefone</th></tr>
+                </thead>
+                <tbody id="listaEscalaDia"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="quadro" id="linkInstagram">
+            <h2>Instagram do BOPE</h2>
+            <p style="text-align:center;">
+              <a href="https://www.instagram.com/bopeoficial" target="_blank" rel="noopener noreferrer">
+                https://www.instagram.com/bopeoficial
+              </a>
+            </p>
+          </div>
+        </section>
+      `;
+      // Preencher tabela escala do dia
+      const tbody = document.getElementById('listaEscalaDia');
+      tbody.innerHTML = '';
+      escalaDoDia.forEach(militar => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${militar.patente}</td><td>${militar.nome}</td><td>${militar.telefone}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Função para criar tabela dinâmica editável com filtro
+    // registros: array de objetos
+    // colunas: [{key:'nome', label:'Nome', editable: true}, ...]
+    // keyId: campo único identificador (index no array se não tiver)
+    // onSave(index, key, novoValor)
+    // onRemove(index)
+    // filtroId: id do input filtro
+    function criarTabelaEditavel({titulo, descricao, registros, colunas, keyId, onSave, onRemove, filtroId}) {
+      const filtroHTML = criarFiltro(filtroId);
+      let html = `
+        <h2>${titulo}</h2>
+        <p>${descricao}</p>
+        ${filtroHTML}
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                ${colunas.map(c => `<th>${c.label}</th>`).join('')}
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${registros.map((reg, i) => {
+                return `<tr data-index="${i}">
+                  ${colunas.map(c => {
+                    const valor = reg[c.key] ?? '';
+                    if (c.editable) {
+                      return `<td contenteditable="true" data-key="${c.key}" aria-label="Editar ${c.label}">${valor}</td>`;
+                    }
+                    return `<td>${valor}</td>`;
+                  }).join('')}
+                  <td><button class="submit-btn btn-remover" data-index="${i}">Remover</button></td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      return html;
+    }
+
+    // Função para aplicar filtro numa tabela (tbody) de acordo com texto do filtro
+    function aplicarFiltro(filtroInputId, tabelaSelector) {
+      const filtroInput = document.getElementById(filtroInputId);
+      if (!filtroInput) return;
+      filtroInput.addEventListener('input', () => {
+        const filtro = filtroInput.value.toLowerCase();
+        const linhas = document.querySelectorAll(tabelaSelector + ' tbody tr');
+        linhas.forEach(tr => {
+          const textoLinha = tr.innerText.toLowerCase();
+          tr.style.display = textoLinha.includes(filtro) ? '' : 'none';
+        });
+      });
+    }
+
+    // Atualiza localStorage e mostra toast
+    function salvarDados(chave, dados) {
+      localStorage.setItem(chave, JSON.stringify(dados));
+      showToast('Dados salvos com sucesso!');
+    }
+
+    // Carrega Efetivo (com filtro, edição e remoção)
+    function carregarEfetivo() {
+      conteudo.innerHTML = criarTabelaEditavel({
+        titulo: 'Efetivo',
+        descricao: 'Gerencie os militares da tropa.',
+        registros: militares,
+        colunas: [
+          { key: 'nome', label: 'Nome de Guerra', editable: true },
+          { key: 'patente', label: 'Patente', editable: true },
+          { key: 'telefone', label: 'Telefone', editable: true }
+        ],
+        keyId: 'id',
+        onSave: (i, key, valor) => {
+          militares[i][key] = valor;
+          salvarDados('militares', militares);
+        },
+        onRemove: (i) => {
+          if (!confirmarAcao('Tem certeza que deseja remover este militar?')) return false;
+          militares.splice(i, 1);
+          salvarDados('militares', militares);
+          carregarEfetivo();
+        },
+        filtroId: 'filtroEfetivo'
+      });
+
+      // Adicionar novo militar
+      conteudo.insertAdjacentHTML('beforeend', `
+        <label>Adicionar Militar:</label>
+        <input type="text" id="inputNomeGuerra" placeholder="Nome de Guerra" />
+        <input type="text" id="inputPatente" placeholder="Patente" style="margin-top:6px;" />
+        <input type="tel" id="inputTelefone" placeholder="Telefone" style="margin-top:6px;" />
+        <button class="submit-btn" id="btnAdicionarMilitar" style="margin-top:10px;">Adicionar Militar</button>
+      `);
+
+      aplicarFiltro('filtroEfetivo', 'table');
+
+      // Eventos
+      // Remover botões
+      conteudo.querySelectorAll('.btn-remover').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const idx = parseInt(e.target.dataset.index);
+          if (militares[idx]) {
+            if (confirmarAcao('Tem certeza que deseja remover este militar?')) {
+              militares.splice(idx, 1);
+              salvarDados('militares', militares);
+              carregarEfetivo();
+            }
+          }
+        });
+      });
+
+      // Edição inline (evento input ou blur)
+      const tdsEditaveis = conteudo.querySelectorAll('td[contenteditable="true"]');
+      tdsEditaveis.forEach(td => {
+        td.addEventListener('blur', e => {
+          const tr = td.closest('tr');
+          const idx = parseInt(tr.dataset.index);
+          const key = td.dataset.key;
+          const novoValor = td.textContent.trim();
+          if (idx >= 0 && key) {
+            militares[idx][key] = novoValor;
+            salvarDados('militares', militares);
+            showToast('Campo atualizado!');
+          }
+        });
+      });
+
+      // Adicionar militar
+      document.getElementById('btnAdicionarMilitar').onclick = () => {
+        const nome = document.getElementById('inputNomeGuerra').value.trim();
+        const patente = document.getElementById('inputPatente').value.trim();
+        const telefone = document.getElementById('inputTelefone').value.trim();
+        if (!nome || !patente || !telefone) {
+          alert('Preencha todos os campos para adicionar militar.');
+          return;
+        }
+        militares.push({ nome, patente, telefone });
+        salvarDados('militares', militares);
+        carregarEfetivo();
+        document.getElementById('inputNomeGuerra').value = '';
+        document.getElementById('inputPatente').value = '';
+        document.getElementById('inputTelefone').value = '';
+      };
+    }
+
+    // Carregar Escala (simples textarea)
+    function carregarEscala() {
+  conteudo.innerHTML = `
+    <h2>Escala</h2>
+    <p>Controle de escala com permutas.</p>
+
+    <div class="card">
+      <h3>Adicionar Servidor à Escala</h3>
+      <input id="ePatente" placeholder="Patente" style="width:100%; margin-bottom:8px;">
+      <input id="eNome" placeholder="Nome" style="width:100%; margin-bottom:8px;">
+      <input id="eTelefone" placeholder="Telefone" style="width:100%; margin-bottom:8px;">
+      <input id="ePermuta" placeholder="Permuta (Sim/Não)" style="width:100%; margin-bottom:8px;">
+      <button class="submit-btn" onclick="addEscala()">Adicionar</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Patente</th>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>Permuta</th>
+        </tr>
+      </thead>
+      <tbody id="escalaTabela"></tbody>
+    </table>
+  `;
+  renderEscala();
+}
+
+function addEscala() {
+  const lista = JSON.parse(localStorage.getItem("escalaLista") || "[]");
+  lista.push({
+    patente: ePatente.value,
+    nome: eNome.value,
+    telefone: eTelefone.value,
+    permuta: ePermuta.value
+  });
+  localStorage.setItem("escalaLista", JSON.stringify(lista));
+  renderEscala();
+  showToast("Escala atualizada");
+}
+
+function renderEscala() {
+  const lista = JSON.parse(localStorage.getItem("escalaLista") || "[]");
+  const tabela = document.getElementById("escalaTabela");
+  if (!tabela) return;
+
+  tabela.innerHTML = lista.map(s => `
+    <tr>
+      <td>${s.patente}</td>
+      <td>${s.nome}</td>
+      <td>${s.telefone}</td>
+      <td>${s.permuta}</td>
+    </tr>
+  `).join("");
+}
+
+    // Carregar Manutenção (com filtro, edição e remoção)
+    function carregarManutencao() {
+      conteudo.innerHTML = criarTabelaEditavel({
+        titulo: 'Manutenção',
+        descricao: 'Histórico de manutenções.',
+        registros: manutencoes,
+        colunas: [
+          { key: 'veiculo', label: 'Veículo', editable: true },
+          { key: 'peca', label: 'Peça/Tarefa', editable: true },
+          { key: 'data', label: 'Data', editable: true }
+        ],
+        keyId: 'id',
+        onSave: (i, key, valor) => {
+          manutencoes[i][key] = valor;
+          salvarDados('manutencoes', manutencoes);
+        },
+        onRemove: (i) => {
+          if (!confirmarAcao('Tem certeza que deseja remover esta manutenção?')) return false;
+          manutencoes.splice(i, 1);
+          salvarDados('manutencoes', manutencoes);
+          carregarManutencao();
+        },
+        filtroId: 'filtroManutencao'
+      });
+
+      // Adicionar nova manutenção
+      conteudo.insertAdjacentHTML('beforeend', `
+        <label>Adicionar Manutenção:</label>
+        <input type="text" id="inputVeiculo" placeholder="Veículo" />
+        <input type="text" id="inputPeca" placeholder="Peça/Tarefa" style="margin-top:6px;" />
+        <input type="date" id="inputDataManutencao" style="margin-top:6px;" />
+        <button class="submit-btn" id="btnAdicionarManutencao" style="margin-top:10px;">Adicionar Manutenção</button>
+      `);
+
+      aplicarFiltro('filtroManutencao', 'table');
+
+      // Eventos remover
+      conteudo.querySelectorAll('.btn-remover').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const idx = parseInt(e.target.dataset.index);
+          if (manutencoes[idx]) {
+            if (confirmarAcao('Tem certeza que deseja remover esta manutenção?')) {
+              manutencoes.splice(idx, 1);
+              salvarDados('manutencoes', manutencoes);
+              carregarManutencao();
+            }
+          }
+        });
+      });
+
+      // Edição inline
+      const tdsEditaveis = conteudo.querySelectorAll('td[contenteditable="true"]');
+      tdsEditaveis.forEach(td => {
+        td.addEventListener('blur', e => {
+          const tr = td.closest('tr');
+          const idx = parseInt(tr.dataset.index);
+          const key = td.dataset.key;
+          const novoValor = td.textContent.trim();
+          if (idx >= 0 && key) {
+            manutencoes[idx][key] = novoValor;
+            salvarDados('manutencoes', manutencoes);
+            showToast('Campo atualizado!');
+          }
+        });
+      });
+
+      // Adicionar manutenção
+      document.getElementById('btnAdicionarManutencao').onclick = () => {
+        const veiculo = document.getElementById('inputVeiculo').value.trim();
+        const peca = document.getElementById('inputPeca').value.trim();
+        const data = document.getElementById('inputDataManutencao').value;
+        if (!veiculo || !peca || !data) {
+          alert('Preencha todos os campos para adicionar manutenção.');
+          return;
+        }
+        manutencoes.push({ veiculo, peca, data });
+        salvarDados('manutencoes', manutencoes);
+        carregarManutencao();
+        document.getElementById('inputVeiculo').value = '';
+        document.getElementById('inputPeca').value = '';
+        document.getElementById('inputDataManutencao').value = '';
+      };
+    }
+
+    // Carregar Permutas (com filtro, edição e remoção)
+    function carregarPermutas() {
+      conteudo.innerHTML = criarTabelaEditavel({
+        titulo: 'Permutas',
+        descricao: 'Solicitação e autorização de permutas.',
+        registros: permutas,
+        colunas: [
+          { key: 'm1', label: 'Militar 1', editable: true },
+          { key: 'm2', label: 'Militar 2', editable: true },
+          { key: 'data', label: 'Data', editable: true },
+          { key: 'autorizado', label: 'Autorizado por', editable: true }
+        ],
+        keyId: 'id',
+        onSave: (i, key, valor) => {
+          permutas[i][key] = valor;
+          salvarDados('permutas', permutas);
+        },
+        onRemove: (i) => {
+          if (!confirmarAcao('Tem certeza que deseja remover esta permuta?')) return false;
+          permutas.splice(i, 1);
+          salvarDados('permutas', permutas);
+          carregarPermutas();
+        },
+        filtroId: 'filtroPermutas'
+      });
+
+      // Adicionar permuta
+      conteudo.insertAdjacentHTML('beforeend', `
+        <label>Adicionar Permuta:</label>
+        <input type="text" id="inputMilitar1" placeholder="Militar 1" />
+        <input type="text" id="inputMilitar2" placeholder="Militar 2" style="margin-top:6px;" />
+        <input type="date" id="inputDataPermuta" style="margin-top:6px;" />
+        <input type="text" id="inputAutorizadoPor" placeholder="Autorizado por" style="margin-top:6px;" />
+        <button class="submit-btn" id="btnAdicionarPermuta" style="margin-top:10px;">Solicitar Permuta</button>
+      `);
+
+      aplicarFiltro('filtroPermutas', 'table');
+
+      // Eventos remover
+      conteudo.querySelectorAll('.btn-remover').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const idx = parseInt(e.target.dataset.index);
+          if (permutas[idx]) {
+            if (confirmarAcao('Tem certeza que deseja remover esta permuta?')) {
+              permutas.splice(idx, 1);
+              salvarDados('permutas', permutas);
+              carregarPermutas();
+            }
+          }
+        });
+      });
+
+      // Edição inline
+      const tdsEditaveis = conteudo.querySelectorAll('td[contenteditable="true"]');
+      tdsEditaveis.forEach(td => {
+        td.addEventListener('blur', e => {
+          const tr = td.closest('tr');
+          const idx = parseInt(tr.dataset.index);
+          const key = td.dataset.key;
+          const novoValor = td.textContent.trim();
+          if (idx >= 0 && key) {
+            permutas[idx][key] = novoValor;
+            salvarDados('permutas', permutas);
+            showToast('Campo atualizado!');
+          }
+        });
+      });
+
+      // Adicionar permuta
+      document.getElementById('btnAdicionarPermuta').onclick = () => {
+        const m1 = document.getElementById('inputMilitar1').value.trim();
+        const m2 = document.getElementById('inputMilitar2').value.trim();
+        const data = document.getElementById('inputDataPermuta').value;
+        const autorizado = document.getElementById('inputAutorizadoPor').value.trim();
+        if (!m1 || !m2 || !data || !autorizado) {
+          alert('Preencha todos os campos para adicionar permuta.');
+          return;
+        }
+        permutas.push({ m1, m2, data, autorizado });
+        salvarDados('permutas', permutas);
+        carregarPermutas();
+        document.getElementById('inputMilitar1').value = '';
+        document.getElementById('inputMilitar2').value = '';
+        document.getElementById('inputDataPermuta').value = '';
+        document.getElementById('inputAutorizadoPor').value = '';
+      };
+    }
+
+    // Inicializa a SPA e os eventos dos botões
+    function init() {
+      botoes.forEach(botao => {
+        botao.addEventListener('click', () => {
+          limparAtivo();
+          botao.classList.add('active');
+          switch (botao.id) {
+            case 'btnDashboard': carregarDashboard(); break;
+            case 'btnEfetivo': carregarEfetivo(); break;
+            case 'btnEscala': carregarEscala(); break;
+            case 'btnManutencao': carregarManutencao(); break;
+            case 'btnPermutas': carregarPermutas(); break;
+          }
+        });
+      });
+      carregarDashboard();
+    }
+
+    return {
+      init
+    };
+  })();
+
+  window.onload = SGB.init;
+</script>
+
+</body>
+</html>
